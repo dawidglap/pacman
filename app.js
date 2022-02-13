@@ -92,7 +92,6 @@ function control(e){
   
     switch(e.keyCode){
         case 40:
-            console.log('pressed down')
             if (
                 !squares[pacmanCurrentIndex + width].classList.contains('wall') &&
                 !squares[pacmanCurrentIndex + width].classList.contains('ghost-lair') &&
@@ -102,7 +101,6 @@ function control(e){
             break
 
             case 38:
-            console.log('pressed up')
             if (
                 !squares[pacmanCurrentIndex - width].classList.contains('wall') &&
                 !squares[pacmanCurrentIndex - width].classList.contains('ghost-lair') &&
@@ -113,7 +111,6 @@ function control(e){
             break
 
             case 37: 
-            console.log('pressed left')
             if( 
                 !squares[pacmanCurrentIndex -1].classList.contains('wall') &&
                 !squares[pacmanCurrentIndex -1].classList.contains('ghost-lair') &&
@@ -127,7 +124,6 @@ function control(e){
             break
 
             case 39:
-            console.log('pressed right')
             if(
                 !squares[pacmanCurrentIndex +1].classList.contains('wall') &&
                 !squares[pacmanCurrentIndex +1].classList.contains('ghost-lair') &&
@@ -145,6 +141,7 @@ function control(e){
     pacDotEaten();
     powerPelletEaten();
     checkForWin();
+    checkForGameOver();
 
 }
 
@@ -211,10 +208,8 @@ ghosts.forEach(ghost => {
 ghosts.forEach(ghost => moveGhost(ghost));
 
 function moveGhost(ghost){
-    console.log('ghost moved');
     const directions = [-1, +1, -width, +width];
     let direction = directions[Math.floor(Math.random() * directions.length)];
-    console.log(direction);
 
     ghost.timerId = setInterval(function(){
 
@@ -271,7 +266,6 @@ function checkForGameOver(){
 
             scoreDisplay.innerHTML = "HAI PIERSO!!"
 
-            alert('hai PIERSOOOOO!');
         }
 }
 
