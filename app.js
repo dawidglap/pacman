@@ -272,7 +272,7 @@ function checkForGameOver(){
 //check for win
 
 function checkForWin(){
-    if(score > 274){
+    if(score > 273){
         ghosts.forEach(ghost => clearInterval(ghost.timerId))
 
         document.removeEventListener('keyup', control);
