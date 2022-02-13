@@ -141,8 +141,10 @@ function control(e){
             break  
     }
 
-    squares[pacmanCurrentIndex].classList.add('pacman')
-    pacDotEaten()
+    squares[pacmanCurrentIndex].classList.add('pacman');
+    pacDotEaten();
+    powerPelletEaten();
+    checkForWin();
 
 }
 
@@ -156,9 +158,134 @@ function pacDotEaten(){
     }
 }
 
-class Ghost {
-    constructor(classname, startIndex){
+function powerPelletEaten(){
 
+    //if square pacman is in contains a power pellet
+    if(squares[pacmanCurrentIndex].classList.contains('power-pellet')){
+
+        squares[pacmanCurrentIndex].classList.remove('power-pellet');
+
+        score += 10
+
+        ghosts.forEach(ghost => ghost.isScared = true)
+
+        setTimeout(unScareGhosts, 10000)
+
+    }
+   
+    function unScareGhosts(){
+        ghosts.forEach(ghost => ghost.isScared = false)
+    }
+
+}
+
+class Ghost {
+    constructor(className, startIndex, speed){
+        this.className = className;
+        this.startIndex = startIndex;
+        this.speed = speed;
+        this.currentIndex = startIndex;
+        this.isScared = false;
+        this.timerId = NaN;
     }
 }
 
+const ghosts = [
+    new Ghost ('blinky', 348, 250),
+    new Ghost ('pinky', 376, 400),
+    new Ghost ('inky', 351, 300),
+    new Ghost ('clyde', 379, 500)
+
+]
+
+//draw  ghosts into grid
+
+ghosts.forEach(ghost => {
+
+    squares[ghost.currentIndex].classList.add(ghost.className);
+    squares[ghost.currentIndex].classList.add('ghost');
+});
+
+//move ghost
+
+ghosts.forEach(ghost => moveGhost(ghost));
+
+function moveGhost(ghost){
+    console.log('ghost moved');
+    const directions = [-1, +1, -width, +width];
+    let direction = directions[Math.floor(Math.random() * directions.length)];
+    console.log(direction);
+
+    ghost.timerId = setInterval(function(){
+
+        //if the next square does NOT contain a wall and does not contain a ghost
+        if(
+        !squares[ghost.currentIndex + direction].classList.contains('wall')  &&
+        !squares[ghost.currentIndex + direction].classList.contains('ghost')
+          
+        ){
+
+            //remove ghost class
+            squares[ghost.currentIndex].classList.remove(ghost.className);
+            squares[ghost.currentIndex].classList.remove('ghost', 'scared-ghost');
+
+            //add direction
+            ghost.currentIndex += direction;
+            //add ghost class
+            squares[ghost.currentIndex].classList.add(ghost.className); 
+            squares[ghost.currentIndex].classList.add('ghost');       
+
+        } else direction = directions[Math.floor(Math.random() * directions.length)];
+
+        if(ghost.isScared){
+            squares[ghost.currentIndex].classList.add('scared-ghost');
+        }
+
+        //if the ghost is current scared AND pacman is on it
+        if(ghost.isScared && squares[ghost.currentIndex].classList.contains('pacman')){
+
+
+            squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost');
+            ghost.currentIndex = ghost.startIndex;
+            score += 100;
+            squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
+
+
+        }
+       checkForGameOver();
+    }, ghost.speed)
+}
+
+
+//check for game over
+function checkForGameOver(){
+
+    //if the square pacman is in contains a ghost AND the square does NOT contain a scared ghost 
+    if(
+        squares[pacmanCurrentIndex].classList.contains('ghost') && 
+        !squares[pacmanCurrentIndex].classList.contains('scared-ghost') 
+        ){
+            ghosts.forEach(ghost => clearInterval(ghost.timerId))
+
+            document.removeEventListener('keyup', control);
+
+            scoreDisplay.innerHTML = "HAI PIERSO!!"
+
+            alert('hai PIERSOOOOO!');
+        }
+}
+
+//check for win
+
+function checkForWin(){
+    if(score > 274){
+        ghosts.forEach(ghost => clearInterval(ghost.timerId))
+
+        document.removeEventListener('keyup', control);
+
+        scoreDisplay.innerHTML = "YOU WIN";
+
+        alert('hai vinto Tony');
+        
+    }
+}
